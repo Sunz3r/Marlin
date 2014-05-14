@@ -2320,8 +2320,14 @@ void process_commands()
     case 206: // M206 additional homeing offset
       for(int8_t i=0; i < 3; i++)
       {
-        if(code_seen(axis_codes[i])) add_homeing[i] = code_value();
+        if(code_seen(axis_codes[i]))
+        {
+	  current_position[i] -= add_homeing[i];
+	  add_homeing[i] = code_value();
+	  current_position[i] += add_homeing[i];
+	}
       }
+      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
       break;
     #ifdef DELTA
 	case 665: // M665 set delta configurations L<diagonal_rod> R<delta_radius> S<segments_per_sec>
